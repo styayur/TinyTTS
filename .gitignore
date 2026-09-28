@@ -1,0 +1,8 @@
+/target
+/models
+/config
+/logs
+*.log
+*.wav
+.DS_Store
+Thumbs.db

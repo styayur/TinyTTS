@@ -1,0 +1,19 @@
+# TinyTTS configuration example.
+#
+# TinyTTS stores its runtime settings in <exe_dir>/config/config.toml.
+# Copy this file there and edit it if you prefer to configure by hand,
+# or just use the in-app controls (voice + speed).
+
+# Default voice name. Use one of the names shown in the Voice dropdown.
+voice = "af_heart"
+
+# Playback speed. Allowed range: 0.5 - 2.0.
+speed = 1.0
+
+# Number of ONNX Runtime threads used by the model. Allowed: 1, 2, 4.
+# Takes effect the next time the model is loaded (app restart).
+num_threads = 2
+
+# Optional override for the Kokoro model directory.
+# Leave empty to use <exe_dir>/models/kokoro
+# model_dir = "C:/path/to/kokoro-multi-lang-v1_0"
