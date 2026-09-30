@@ -79,10 +79,7 @@ mod imp {
         }
 
         pub fn try_recv(&self) -> Option<HotkeyEvent> {
-            match self.rx.try_recv() {
-                Ok(ev) => Some(ev),
-                Err(_) => None,
-            }
+            self.rx.try_recv().ok()
         }
     }
 

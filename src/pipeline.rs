@@ -154,28 +154,34 @@ fn spawn_producer(
                 voice_id,
                 speed,
                 cancel,
-                tx,
-                progress_done,
-                error,
+                ProducerOutput {
+                    tx,
+                    progress_done,
+                    error,
+                },
             );
             producer_done.store(true, Ordering::Relaxed);
         })
         .expect("failed to spawn TTS thread")
 }
 
-/// Generate every segment and push the resulting chunks into `tx`.
+struct ProducerOutput {
+    tx: ChunkSender,
+    progress_done: Arc<AtomicUsize>,
+    error: Arc<Mutex<Option<String>>>,
+}
+
+/// Generate every segment and push the resulting chunks into the output sink.
 ///
 /// Kept as a free function so the producer loop is unit-testable without a
 /// real audio device.
-pub fn run_producer(
+fn run_producer(
     engine: Arc<dyn TtsEngine>,
     segments: Vec<String>,
     voice_id: i32,
     speed: f32,
     cancel: Arc<AtomicBool>,
-    tx: ChunkSender,
-    progress_done: Arc<AtomicUsize>,
-    error: Arc<Mutex<Option<String>>>,
+    output: ProducerOutput,
 ) {
     for (i, segment) in segments.into_iter().enumerate() {
         if cancel.load(Ordering::Relaxed) {
@@ -183,15 +189,15 @@ pub fn run_producer(
         }
         match engine.synthesize(&segment, voice_id, speed, &cancel) {
             Ok(chunk) => {
-                if tx.send(chunk).is_err() {
+                if output.tx.send(chunk).is_err() {
                     // The player/consumer is gone: nothing more to do.
                     break;
                 }
-                progress_done.store(i + 1, Ordering::Relaxed);
+                output.progress_done.store(i + 1, Ordering::Relaxed);
             }
             Err(e) => {
                 if !matches!(e, TinyTtsError::Cancelled) {
-                    *error.lock().unwrap() = Some(e.to_string());
+                    *output.error.lock().unwrap() = Some(e.to_string());
                 }
                 break;
             }
@@ -256,9 +262,10 @@ mod tests {
             }
             let mut samples = Vec::with_capacity(text.chars().count() * self.samples_per_char);
             for ch in text.chars() {
-                samples.extend(
-                    std::iter::repeat((ch as u32 as f32) / 128.0).take(self.samples_per_char),
-                );
+                samples.extend(std::iter::repeat_n(
+                    (ch as u32 as f32) / 128.0,
+                    self.samples_per_char,
+                ));
             }
             Ok(AudioChunk {
                 samples,
@@ -298,9 +305,11 @@ mod tests {
             0,
             1.0,
             Arc::new(AtomicBool::new(false)),
-            tx,
-            Arc::clone(&done),
-            Arc::clone(&error),
+            ProducerOutput {
+                tx,
+                progress_done: Arc::clone(&done),
+                error: Arc::clone(&error),
+            },
         );
         let chunks: Vec<AudioChunk> = rx.try_iter().collect();
         assert_eq!(chunks.len(), 3);
@@ -321,9 +330,11 @@ mod tests {
             0,
             1.0,
             Arc::clone(&cancel),
-            tx,
-            Arc::clone(&done),
-            Arc::clone(&error),
+            ProducerOutput {
+                tx,
+                progress_done: Arc::clone(&done),
+                error: Arc::clone(&error),
+            },
         );
         assert_eq!(done.load(Ordering::Relaxed), 0);
         assert!(error.lock().unwrap().is_none());
