@@ -7,8 +7,6 @@
 //! On non-Windows platforms this module provides a no-op stub so the rest of the
 //! code can keep the same interface.
 
-use std::time::Duration;
-
 /// Events emitted by the hotkey listener.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum HotkeyEvent {

@@ -145,7 +145,7 @@ impl TtsEngine for SherpaKokoroEngine {
             &generation,
             Some({
                 let cancel = Arc::clone(cancel);
-                move |_samples, _progress| !cancel.load(Ordering::Relaxed)
+                move |_samples: &[f32], _progress: f32| !cancel.load(Ordering::Relaxed)
             }),
         );
 
