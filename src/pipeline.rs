@@ -56,15 +56,19 @@ impl Pipeline {
         player.start_feeding(rx);
 
         let _ = spawn_producer(
-            Arc::clone(&engine),
-            segments,
-            voice_id,
-            speed,
-            Arc::clone(&cancel),
-            tx,
-            Arc::clone(&progress_done),
-            Arc::clone(&error),
-            Arc::clone(&producer_done),
+            ProducerRequest {
+                engine: Arc::clone(&engine),
+                segments,
+                voice_id,
+                speed,
+                cancel: Arc::clone(&cancel),
+            },
+            ProducerOutput {
+                tx,
+                progress_done: Arc::clone(&progress_done),
+                error: Arc::clone(&error),
+                producer_done: Arc::clone(&producer_done),
+            },
         );
 
         Ok(Self {
@@ -133,56 +137,47 @@ impl Drop for Pipeline {
     }
 }
 
-#[cfg(feature = "native")]
-fn spawn_producer(
+#[cfg(any(feature = "native", test))]
+struct ProducerRequest {
     engine: Arc<dyn TtsEngine>,
     segments: Vec<String>,
     voice_id: i32,
     speed: f32,
     cancel: Arc<AtomicBool>,
-    tx: ChunkSender,
-    progress_done: Arc<AtomicUsize>,
-    error: Arc<Mutex<Option<String>>>,
-    producer_done: Arc<AtomicBool>,
-) -> JoinHandle<()> {
-    std::thread::Builder::new()
-        .name("tinytts-tts".to_string())
-        .spawn(move || {
-            run_producer(
-                engine,
-                segments,
-                voice_id,
-                speed,
-                cancel,
-                ProducerOutput {
-                    tx,
-                    progress_done,
-                    error,
-                },
-            );
-            producer_done.store(true, Ordering::Relaxed);
-        })
-        .expect("failed to spawn TTS thread")
 }
 
+#[cfg(any(feature = "native", test))]
 struct ProducerOutput {
     tx: ChunkSender,
     progress_done: Arc<AtomicUsize>,
     error: Arc<Mutex<Option<String>>>,
+    producer_done: Arc<AtomicBool>,
+}
+
+#[cfg(feature = "native")]
+fn spawn_producer(request: ProducerRequest, output: ProducerOutput) -> JoinHandle<()> {
+    std::thread::Builder::new()
+        .name("tinytts-tts".to_string())
+        .spawn(move || {
+            run_producer(request, &output);
+            output.producer_done.store(true, Ordering::Relaxed);
+        })
+        .expect("failed to spawn TTS thread")
 }
 
 /// Generate every segment and push the resulting chunks into the output sink.
 ///
 /// Kept as a free function so the producer loop is unit-testable without a
 /// real audio device.
-fn run_producer(
-    engine: Arc<dyn TtsEngine>,
-    segments: Vec<String>,
-    voice_id: i32,
-    speed: f32,
-    cancel: Arc<AtomicBool>,
-    output: ProducerOutput,
-) {
+#[cfg(any(feature = "native", test))]
+fn run_producer(request: ProducerRequest, output: &ProducerOutput) {
+    let ProducerRequest {
+        engine,
+        segments,
+        voice_id,
+        speed,
+        cancel,
+    } = request;
     for (i, segment) in segments.into_iter().enumerate() {
         if cancel.load(Ordering::Relaxed) {
             break;
@@ -299,17 +294,21 @@ mod tests {
         let (tx, rx) = queue::bounded(4);
         let done = Arc::new(AtomicUsize::new(0));
         let error = Arc::new(Mutex::new(None));
+        let output = ProducerOutput {
+            tx,
+            progress_done: Arc::clone(&done),
+            error: Arc::clone(&error),
+            producer_done: Arc::new(AtomicBool::new(false)),
+        };
         run_producer(
-            mock_engine(),
-            segments,
-            0,
-            1.0,
-            Arc::new(AtomicBool::new(false)),
-            ProducerOutput {
-                tx,
-                progress_done: Arc::clone(&done),
-                error: Arc::clone(&error),
+            ProducerRequest {
+                engine: mock_engine(),
+                segments,
+                voice_id: 0,
+                speed: 1.0,
+                cancel: Arc::new(AtomicBool::new(false)),
             },
+            &output,
         );
         let chunks: Vec<AudioChunk> = rx.try_iter().collect();
         assert_eq!(chunks.len(), 3);
@@ -324,17 +323,21 @@ mod tests {
         let done = Arc::new(AtomicUsize::new(0));
         let error = Arc::new(Mutex::new(None));
         let cancel = Arc::new(AtomicBool::new(true));
+        let output = ProducerOutput {
+            tx,
+            progress_done: Arc::clone(&done),
+            error: Arc::clone(&error),
+            producer_done: Arc::new(AtomicBool::new(false)),
+        };
         run_producer(
-            mock_engine(),
-            segments,
-            0,
-            1.0,
-            Arc::clone(&cancel),
-            ProducerOutput {
-                tx,
-                progress_done: Arc::clone(&done),
-                error: Arc::clone(&error),
+            ProducerRequest {
+                engine: mock_engine(),
+                segments,
+                voice_id: 0,
+                speed: 1.0,
+                cancel: Arc::clone(&cancel),
             },
+            &output,
         );
         assert_eq!(done.load(Ordering::Relaxed), 0);
         assert!(error.lock().unwrap().is_none());
