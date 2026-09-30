@@ -3,6 +3,10 @@ TinyTTS
 
 Tiny, offline text-to-speech for Windows.
 
+[![CI](https://github.com/styayur/TinyTTS/actions/workflows/ci.yml/badge.svg)](https://github.com/styayur/TinyTTS/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/styayur/TinyTTS)](https://github.com/styayur/TinyTTS/releases/latest)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 - Local
 - No API
 - No account
@@ -75,13 +79,20 @@ Verify your toolchain:
 Download the model
 ------------------
 
-Download the Chinese + English Kokoro model and extract it next to the app:
+Download the pinned Chinese + English Kokoro model, verify it, and extract it next to the app:
 
-    mkdir models
-    curl -L -o kokoro.tar.bz2 ^
-      https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/kokoro-multi-lang-v1_0.tar.bz2
-    tar -xf kokoro.tar.bz2
-    del kokoro.tar.bz2
+```powershell
+mkdir models
+curl.exe -L -o kokoro.tar.bz2 https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/kokoro-multi-lang-v1_0.tar.bz2
+Get-FileHash .\kokoro.tar.bz2 -Algorithm SHA256
+# Expected: C5F7E2D2CAF082BC1D20FB70334A61D99D20B484500AAD32E7CF84C128EA3298
+tar -xf kokoro.tar.bz2
+Remove-Item kokoro.tar.bz2
+```
+
+Exact source, size, license, and provenance are recorded in
+[docs/model-provenance.md](docs/model-provenance.md). TinyTTS never downloads a
+model at runtime.
 
 Expected layout:
 
@@ -159,6 +170,27 @@ Portable ZIP
 Unzip `TinyTTS-win-x64.zip` anywhere and run `TinyTTS.exe`. The application
 binary is a few tens of MB; the Kokoro model is counted separately (~350 MB).
 
+Download
+--------
+
+Download the latest Windows portable ZIP from
+[GitHub Releases](https://github.com/styayur/TinyTTS/releases/latest). The
+archive includes `TinyTTS.exe`, configuration examples, licenses, and
+`SHA256SUMS.txt`. Model files are intentionally separate because they are about
+350 MB and have their own provenance and license terms.
+
+Current support is Windows 10/11 x64. TinyTTS does not offer a cloud service,
+telemetry, account system, or cross-platform build.
+
+Release and version policy
+--------------------------
+
+Releases use semantic versions and tags such as `v0.2.0`. A release is built
+only from an exact `vX.Y.Z` tag, repeats formatting/lint/tests, produces a
+stable `TinyTTS-windows-x64-vX.Y.Z.zip` filename, and publishes `SHA256SUMS.txt`
+alongside it. Maintainers create releases after validation; contributors do not
+publish tags or assets.
+
 Configuration
 -------------
 
@@ -191,6 +223,26 @@ Project layout
     ├─ paths.rs           portable path resolution
     ├─ error.rs           error types
     └─ log.rs             tiny file logger (`logs/tinytts.log`)
+
+Contributing
+------------
+
+Development setup, validation commands, compatibility expectations, and asset
+rules are in [CONTRIBUTING.md](CONTRIBUTING.md).
+
+Security
+--------
+
+Do not report exploitable issues in a public issue. Follow
+[SECURITY.md](SECURITY.md) and use GitHub private vulnerability reporting.
+
+Community
+---------
+
+Questions, design discussions, and early feedback are welcome on
+[Discord](https://discord.gg/wA2xy6VPK). Discord is an informal community
+channel, not an official support or response-time guarantee. Use GitHub Issues
+for reproducible bugs and scoped feature requests.
 
 Licenses
 --------
