@@ -228,7 +228,8 @@ Contributing
 ------------
 
 Development setup, validation commands, compatibility expectations, and asset
-rules are in [CONTRIBUTING.md](CONTRIBUTING.md).
+rules are in [CONTRIBUTING.md](CONTRIBUTING.md). The core/UI/model/release
+boundaries are in [docs/architecture.md](docs/architecture.md).
 
 Security
 --------
