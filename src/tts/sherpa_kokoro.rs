@@ -132,7 +132,7 @@ impl TtsEngine for SherpaKokoroEngine {
         text: &str,
         voice_id: i32,
         speed: f32,
-        cancel: &AtomicBool,
+        cancel: &Arc<AtomicBool>,
     ) -> Result<AudioChunk> {
         let generation = GenerationConfig {
             sid: voice_id,
@@ -143,7 +143,10 @@ impl TtsEngine for SherpaKokoroEngine {
         let audio = self.tts.generate_with_config(
             text,
             &generation,
-            Some(|_samples, _progress| !cancel.load(Ordering::Relaxed)),
+            Some({
+                let cancel = Arc::clone(cancel);
+                move |_samples, _progress| !cancel.load(Ordering::Relaxed)
+            }),
         );
 
         match audio {

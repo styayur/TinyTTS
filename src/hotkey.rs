@@ -20,6 +20,7 @@ mod imp {
     use super::HotkeyEvent;
     use std::sync::mpsc::{channel, Receiver, Sender, TryRecvError};
     use std::thread;
+    use std::time::Duration;
 
     use windows_sys::Win32::Foundation::{HWND, WPARAM};
     use windows_sys::Win32::UI::Input::KeyboardAndMouse::{RegisterHotKey, UnregisterHotKey};

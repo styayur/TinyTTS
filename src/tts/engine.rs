@@ -4,6 +4,7 @@
 //! directly, which keeps the door open for other backends in the future.
 
 use std::sync::atomic::AtomicBool;
+use std::sync::Arc;
 
 use crate::error::Result;
 
@@ -40,6 +41,6 @@ pub trait TtsEngine: Send + Sync {
         text: &str,
         voice_id: i32,
         speed: f32,
-        cancel: &AtomicBool,
+        cancel: &Arc<AtomicBool>,
     ) -> Result<AudioChunk>;
 }

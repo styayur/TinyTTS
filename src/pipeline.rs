@@ -206,7 +206,7 @@ pub fn synthesize_all(
     text: &str,
     voice_id: i32,
     speed: f32,
-    cancel: &AtomicBool,
+    cancel: &Arc<AtomicBool>,
 ) -> Result<Vec<f32>> {
     let mut out = Vec::new();
     for segment in text_segmenter::segment(text) {
@@ -246,7 +246,7 @@ mod tests {
             text: &str,
             _voice_id: i32,
             _speed: f32,
-            cancel: &AtomicBool,
+            cancel: &Arc<AtomicBool>,
         ) -> Result<AudioChunk> {
             if let Some(delay) = self.delay {
                 std::thread::sleep(delay);
@@ -333,7 +333,7 @@ mod tests {
     #[test]
     fn synthesize_all_concatenates_samples() {
         let engine = mock_engine();
-        let cancel = AtomicBool::new(false);
+        let cancel = Arc::new(AtomicBool::new(false));
         let samples = synthesize_all(&*engine, "ab.cd", 0, 1.0, &cancel).unwrap();
         // "ab.cd" -> segments ["ab.", "cd"] -> 3 + 2 chars -> 5 * 4 samples.
         assert_eq!(samples.len(), 20);
