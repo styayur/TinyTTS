@@ -13,7 +13,7 @@ use std::thread::JoinHandle;
 use crate::audio::queue::{self, ChunkSender};
 use crate::error::{Result, TinyTtsError};
 use crate::text_segmenter;
-use crate::tts::{AudioChunk, TtsEngine};
+use crate::tts::TtsEngine;
 
 #[cfg(feature = "native")]
 use crate::audio::player::Player;
@@ -223,7 +223,7 @@ pub fn synthesize_all(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tts::Voice;
+    use crate::tts::{AudioChunk, Voice};
     use std::time::Duration;
 
     struct MockEngine {
