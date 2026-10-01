@@ -1,25 +1,21 @@
-TinyTTS
-=======
+<div align="center">
 
-Tiny, offline text-to-speech for Windows.
+<img src="docs/assets/brand/logo-mark.svg" width="84" alt="TinyTTS logo" />
 
-[![CI](https://github.com/styayur/TinyTTS/actions/workflows/ci.yml/badge.svg)](https://github.com/styayur/TinyTTS/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/styayur/TinyTTS)](https://github.com/styayur/TinyTTS/releases/latest)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+# TinyTTS
 
-- Local
-- No API
-- No account
-- No Python runtime
-- Kokoro + sherpa-onnx
-- Chinese / English
-- Portable
+**Tiny. Offline. Just speak.**
 
-Usage:
+[Download](https://github.com/styayur/TinyTTS/releases/latest) · [Documentation](docs/architecture.md) · [Releases](https://github.com/styayur/TinyTTS/releases) · [Discussions](https://github.com/styayur/TinyTTS/discussions)
 
-    Paste text → Speak.
+[![release status: pre-release](https://img.shields.io/badge/release-pre--release-informational)]()
+[![Rust CI](https://github.com/styayur/TinyTTS/actions/workflows/ci.yml/badge.svg)](https://github.com/styayur/TinyTTS/actions/workflows/ci.yml)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![Rust](https://img.shields.io/badge/Rust-black?logo=rust&logoColor=white)]()
+[![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white)]()
+[![offline](https://img.shields.io/badge/offline-first-0f172a)]()
 
-TinyTTS does not send your text to any server.
+</div>
 
 ---
 
