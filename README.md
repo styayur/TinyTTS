@@ -6,6 +6,8 @@
 
 **Tiny. Offline. Just speak.**
 
+**Status:** 🟡 Beta
+
 [Download](https://github.com/styayur/TinyTTS/releases/latest) · [Documentation](docs/architecture.md) · [Releases](https://github.com/styayur/TinyTTS/releases) · [Discussions](https://github.com/styayur/TinyTTS/discussions)
 
 [![release status: pre-release](https://img.shields.io/badge/release-pre--release-informational)]()
@@ -14,6 +16,8 @@
 [![Rust](https://img.shields.io/badge/Rust-black?logo=rust&logoColor=white)]()
 [![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white)]()
 [![offline](https://img.shields.io/badge/offline-first-0f172a)]()
+
+![TinyTTS desktop app](docs/assets/tinytts.png)
 
 </div>
 
@@ -226,6 +230,26 @@ Contributing
 Development setup, validation commands, compatibility expectations, and asset
 rules are in [CONTRIBUTING.md](CONTRIBUTING.md). The core/UI/model/release
 boundaries are in [docs/architecture.md](docs/architecture.md).
+
+## Roadmap
+
+### Current
+
+- Offline Windows TTS with Kokoro and sherpa-onnx; portable ZIP builds.
+- Explicit model provenance and licensing notes.
+
+### Next
+
+- Publish the first stable `vX.Y.Z` release and add a real GUI screenshot.
+- Voice/model selection and basic pronunciation controls.
+
+### Future
+
+- Smaller model variants and additional voices/languages.
+
+### Not planned
+
+- Cloud TTS, accounts, or telemetry; the tool stays offline.
 
 Security
 --------
