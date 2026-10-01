@@ -17,6 +17,8 @@
 [![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white)]()
 [![offline](https://img.shields.io/badge/offline-first-0f172a)]()
 
+![TinyTTS desktop app](docs/assets/tinytts.png)
+
 </div>
 
 ---
