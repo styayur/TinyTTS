@@ -3,7 +3,7 @@ name = "tinytts"
 version = "0.1.0"
 edition = "2021"
 description = "Tiny, offline text-to-speech for Windows (Kokoro + sherpa-onnx)"
-license = "MIT"
+license = "GPL-3.0-or-later"
 repository = "https://github.com/styayur/TinyTTS"
 readme = "README.md"
 

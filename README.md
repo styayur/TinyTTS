@@ -12,7 +12,7 @@
 
 [![release status: pre-release](https://img.shields.io/badge/release-pre--release-informational)]()
 [![Rust CI](https://github.com/styayur/TinyTTS/actions/workflows/ci.yml/badge.svg)](https://github.com/styayur/TinyTTS/actions/workflows/ci.yml)
-[![license: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![license: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
 [![Rust](https://img.shields.io/badge/Rust-black?logo=rust&logoColor=white)]()
 [![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white)]()
 [![offline](https://img.shields.io/badge/offline-first-0f172a)]()
