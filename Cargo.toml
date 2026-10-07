@@ -22,7 +22,7 @@ native = ["dep:sherpa-onnx", "dep:eframe", "dep:rodio", "dep:rfd", "dep:windows-
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
-toml = "0.8"
+toml = "1.1"
 thiserror = "2"
 sherpa-onnx = { version = "1.13.8", optional = true }
 eframe = { version = "0.31", optional = true }
