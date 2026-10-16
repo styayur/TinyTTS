@@ -1,25 +1,16 @@
-<div align="center">
-
-<img src="docs/assets/brand/logo-mark.svg" width="84" alt="TinyTTS logo" />
-
 # TinyTTS
 
-**Tiny. Offline. Just speak.**
+Offline text-to-speech for Windows using Rust, sherpa-onnx and Kokoro.
 
-**Status:** 🟡 Beta
+**Status:** Source preview; no published GitHub release as of 2026-10-08. Build from source using the instructions below.
 
-[Download](https://github.com/styayur/TinyTTS/releases/latest) · [Documentation](docs/architecture.md) · [Releases](https://github.com/styayur/TinyTTS/releases) · [Discussions](https://github.com/styayur/TinyTTS/discussions)
+[Documentation](docs/architecture.md) · [Releases](https://github.com/styayur/TinyTTS/releases) · [Discussions](https://github.com/styayur/TinyTTS/discussions)
 
 [![release status: pre-release](https://img.shields.io/badge/release-pre--release-informational)]()
-[![Rust CI](https://github.com/styayur/TinyTTS/actions/workflows/ci.yml/badge.svg)](https://github.com/styayur/TinyTTS/actions/workflows/ci.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
-[![Rust](https://img.shields.io/badge/Rust-black?logo=rust&logoColor=white)]()
-[![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white)]()
-[![offline](https://img.shields.io/badge/offline-first-0f172a)]()
 
 ![TinyTTS desktop app](docs/assets/tinytts.png)
 
-</div>
 
 ---
 
