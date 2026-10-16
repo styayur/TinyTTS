@@ -7,7 +7,7 @@ Offline text-to-speech for Windows using Rust, sherpa-onnx and Kokoro.
 [Documentation](docs/architecture.md) · [Releases](https://github.com/styayur/TinyTTS/releases) · [Discussions](https://github.com/styayur/TinyTTS/discussions)
 
 [![release status: pre-release](https://img.shields.io/badge/release-pre--release-informational)]()
-[![license: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![license: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
 
 ![TinyTTS desktop app](docs/assets/tinytts.png)
 
@@ -259,5 +259,5 @@ for reproducible bugs and scoped feature requests.
 Licenses
 --------
 
-TinyTTS itself is MIT. The model and bundled native libraries have their own
+TinyTTS application source is GPL-3.0-or-later. The model and bundled native libraries have their own
 licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

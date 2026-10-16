@@ -1,9 +1,9 @@
 # Third-Party Notices
 
-TinyTTS is licensed under the MIT License. It links against, or otherwise uses,
-third-party components whose licenses differ from the project license. The
-list below is informational and is **not** a claim that every component shares
-the TinyTTS license.
+TinyTTS application source code is licensed under GPL-3.0-or-later.
+Third-party components remain under their respective licences. The list below
+is informational and is **not** a claim that every component shares the
+TinyTTS application licence.
 
 ## Runtime components
 
