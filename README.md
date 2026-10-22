@@ -2,262 +2,97 @@
 
 Offline text-to-speech for Windows using Rust, sherpa-onnx and Kokoro.
 
-**Status:** Source preview; no published GitHub release as of 2026-10-08. Build from source using the instructions below.
+[简体中文](README.zh-CN.md) · [Architecture](docs/architecture.md) · [Issues](https://github.com/styayur/TinyTTS/issues)
 
-[Documentation](docs/architecture.md) · [Releases](https://github.com/styayur/TinyTTS/releases) · [Discussions](https://github.com/styayur/TinyTTS/discussions)
+**Source preview.** No GitHub release is published as of 22-10-2026. Build from source; a release workflow and packaging instructions are not an available download.
 
-[![release status: pre-release](https://img.shields.io/badge/release-pre--release-informational)]()
-[![license: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
+![TinyTTS desktop window with its text input, voice and playback controls](docs/assets/tinytts.png)
 
-![TinyTTS desktop app](docs/assets/tinytts.png)
+## Features
 
+Chinese, English and mixed-text reading; segmented long text; Speak / Pause / Resume / Stop; voice selection; speed 0.5–2.0; 16-bit PCM WAV export. `Ctrl+Alt+S` reads the Windows clipboard while the app is running. Settings live beside the executable. A bounded audio queue limits queued audio.
 
----
+Inference is local, without an account, telemetry or HTTP server. Python/Node.js are not runtime requirements. Source builds and the initial manual model download require network access.
 
-What is TinyTTS?
-----------------
+## Build and first run
 
-TinyTTS is a minimal, fully offline text-to-speech desktop tool for Windows.
-Download, unzip, double-click `TinyTTS.exe`, paste text and press **Speak**.
-It runs entirely on your machine using the
-[Kokoro](https://huggingface.co/hexgrad/Kokoro-82M) model through
-[sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx). There is no cloud, no
-login, no telemetry, no Python, no Node, no Electron and no local HTTP server.
-
-The goal is deliberately small: it is the offline reader that feels like a
-missing Windows utility, not another AI voice studio.
-
-Features (MVP)
---------------
-
-- Chinese, English and mixed Chinese/English text
-- Long text is segmented automatically and played chunk by chunk
-- Speak / Pause / Resume / Stop
-- Voice selector (auto-detected from the model)
-- Speed 0.5x – 2.0x
-- Save WAV (standard 16-bit PCM, no FFmpeg)
-- Ctrl+Alt+S global shortcut: read clipboard and speak (Windows)
-- Settings persisted next to the executable (`config/config.toml`)
-- Bounded audio queue so long text does not grow memory without limit
-
-Requirements
-------------
-
-To build from source on Windows you need:
-
-1. **Rust** (stable, MSVC target). Install with
-   [rustup](https://rustup.rs) and select the `x86_64-pc-windows-msvc`
-   toolchain (this is the default).
-2. **Visual Studio Build Tools** (or Visual Studio) with the
-   **"Desktop development with C++"** workload, which provides:
-
-   - MSVC v143 (or later) C++ x64/x86 build tools
-   - Windows 10/11 SDK
-
-   The `sherpa-onnx` build script downloads a prebuilt native library
-   automatically on the first build, so you do not need to compile it yourself,
-   but you do need the MSVC linker (`link.exe`).
-
-   > Rust's GNU toolchain (`x86_64-pc-windows-gnu`) is **not** sufficient for
-   > the default static linking of the prebuilt sherpa-onnx library, which is
-   > built with MSVC.
-
-Verify your toolchain:
-
-    rustc -vV
-    # host should be x86_64-pc-windows-msvc
-
-Download the model
-------------------
-
-Download the pinned Chinese + English Kokoro model, verify it, and extract it next to the app:
+Use Windows 10/11 x64, stable Rust with the `x86_64-pc-windows-msvc` target, and Visual Studio Build Tools with **Desktop development with C++** and a Windows SDK. GNU Rust is not sufficient for the default prebuilt native library. The sherpa-onnx build script downloads that library on the first native build.
 
 ```powershell
-mkdir models
-curl.exe -L -o kokoro.tar.bz2 https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/kokoro-multi-lang-v1_0.tar.bz2
-Get-FileHash .\kokoro.tar.bz2 -Algorithm SHA256
-# Expected: C5F7E2D2CAF082BC1D20FB70334A61D99D20B484500AAD32E7CF84C128EA3298
-tar -xf kokoro.tar.bz2
-Remove-Item kokoro.tar.bz2
+git clone https://github.com/styayur/TinyTTS.git
+cd TinyTTS
+rustc -vV
+cargo build --release
 ```
 
-Exact source, size, license, and provenance are recorded in
-[docs/model-provenance.md](docs/model-provenance.md). TinyTTS never downloads a
-model at runtime.
+Confirm `rustc -vV` reports the MSVC host. The executable is `target/release/TinyTTS.exe`. Work in that directory for model setup:
 
-Expected layout:
+```powershell
+Set-Location ./target/release
+```
 
-    TinyTTS/
-    ├─ TinyTTS.exe
-    ├─ models/
-    │  └─ kokoro/
-    │     ├─ model.onnx
-    │     ├─ voices.bin
-    │     ├─ tokens.txt
-    │     ├─ espeak-ng-data/
-    │     ├─ lexicon-us-en.txt
-    │     ├─ lexicon-zh.txt
-    │     └─ dict/
-    └─ config/
-       └─ config.toml   (created automatically)
+Download the pinned model, verify its hash **before extraction**, and inspect its paths:
 
-If the files are missing, TinyTTS shows *"Kokoro model files were not found"*
-together with the exact path it searched. It never downloads models by itself.
+```powershell
+New-Item -ItemType Directory -Force models | Out-Null
+curl.exe -L -o kokoro.tar.bz2 https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/kokoro-multi-lang-v1_0.tar.bz2
+$expected = 'C5F7E2D2CAF082BC1D20FB70334A61D99D20B484500AAD32E7CF84C128EA3298'
+if ((Get-FileHash ./kokoro.tar.bz2 -Algorithm SHA256).Hash -ne $expected) { throw 'Model checksum mismatch' }
+tar -tf ./kokoro.tar.bz2 | Select-Object -First 15
+tar -xf ./kokoro.tar.bz2 -C ./models
+```
 
-Build
------
+The archive includes a model directory. Rename that extracted directory to `models/kokoro` without replacing an existing model, or set `model_dir` to its absolute path. Merely extracting beside the EXE does not establish the default layout. Preserve the complete model contents, including lexicons and dictionary data:
 
-    git clone https://github.com/styayur/TinyTTS
-    cd TinyTTS
-    cargo build --release
+```text
+TinyTTS.exe
+models/kokoro/
+  model.onnx
+  voices.bin
+  tokens.txt
+  espeak-ng-data/
+  lexicon-us-en.txt
+  lexicon-zh.txt
+  dict/
+config/config.toml   # created when settings are saved
+```
 
-The binary is `target/release/TinyTTS.exe`.
+The model archive is 349,906,910 bytes and has separate component terms; see [provenance](docs/model-provenance.md) and [third-party notices](THIRD_PARTY_NOTICES.md). The app never downloads models at runtime. A missing-model error lists the path searched.
 
-Run
----
+```powershell
+.\TinyTTS.exe
+```
 
-Copy the executable next to your `models/` folder (or put `models/kokoro` into
-`target/release/`), then launch:
+Wait for `Loading model...` to become `Ready`, paste text and press Speak. Pause/Resume controls playback; Stop clears queued audio and cancels generation. Save WAV renders the full text to a mono PCM WAV. The global shortcut reads clipboard text, so check clipboard contents before using it.
 
-    target\release\TinyTTS.exe
+## Configuration
 
-On first launch the model is loaded once in the background; the status bar shows
-`Loading model...` and then `Ready`.
+Copy the root [config.example.toml](config.example.toml) to `config/config.toml` beside the EXE for manual configuration, or save voice/speed in the UI.
 
-Core commands
--------------
+| Key | Default | Meaning |
+| --- | --- | --- |
+| `voice` | `af_heart` | A voice present in the selected model |
+| `speed` | `1.0` | 0.5–2.0 playback speed |
+| `num_threads` | `2` | 1, 2 or 4 inference threads; restart after changes |
+| `model_dir` | Empty | Optional absolute override; otherwise `models/kokoro` beside the EXE |
 
-- **Speak** – segment the text and start playing as soon as the first chunk is ready.
-- **Pause / Resume** – pause/resume playback only.
-- **Stop** – stop playback, clear the queue and cancel generation.
-- **Save WAV** – generate the whole text into a 16-bit mono PCM WAV file.
-- **Ctrl+Alt+S** – read the clipboard and speak it, even when minimized.
+## Testing and limits
 
-Tests
------
+From the repository root, use the existing [Windows CI](https://github.com/styayur/TinyTTS/actions/workflows/ci.yml) checks:
 
-    cargo fmt
-    cargo clippy --all-targets
-    cargo test
+```powershell
+cargo fmt --all -- --check
+cargo clippy --all-targets --all-features -- -D warnings
+cargo test --all
+cargo build --release
+```
 
-The full suite is light: it never loads the real Kokoro model. If you only want
-the dependency-free core tests (text segmenter, settings, paths, WAV writer,
-mock TTS pipeline) and do not have the native toolchain ready:
+`cargo test --no-default-features` runs the dependency-free core without GUI, audio or sherpa-onnx linking. Tests use a mock engine and do not load the real Kokoro model; they do not establish voice quality or real-device audio compatibility. Windows is the supported application target; no cross-platform delivery is claimed. Model/voice coverage and pronunciation depend on the supplied model.
 
-    cargo test --no-default-features
+## Contributing and next work
 
-This builds with the `native` feature disabled and skips GUI/sherpa-onnx/audio
-linking entirely.
+[CONTRIBUTING.md](CONTRIBUTING.md) covers development and asset rules; use [Issues](https://github.com/styayur/TinyTTS/issues) for redacted reproductions and [SECURITY.md](SECURITY.md) for vulnerabilities. Do not commit model archives, generated audio, settings, logs or build output. First-release validation and pronunciation/model improvements remain future work; existing UI voice selection is already implemented. See [CHANGELOG.md](CHANGELOG.md) for source changes.
 
-Portable ZIP
-------------
+## License
 
-    cargo build --release
-    mkdir dist\TinyTTS
-    copy target\release\TinyTTS.exe dist\TinyTTS\
-    xcopy /e /i models\kokoro dist\TinyTTS\models\kokoro
-    powershell Compress-Archive -Path dist\TinyTTS\* -DestinationPath TinyTTS-win-x64.zip
-
-Unzip `TinyTTS-win-x64.zip` anywhere and run `TinyTTS.exe`. The application
-binary is a few tens of MB; the Kokoro model is counted separately (~350 MB).
-
-Download
---------
-
-Download the latest Windows portable ZIP from
-[GitHub Releases](https://github.com/styayur/TinyTTS/releases/latest). The
-archive includes `TinyTTS.exe`, configuration examples, licenses, and
-`SHA256SUMS.txt`. Model files are intentionally separate because they are about
-350 MB and have their own provenance and license terms.
-
-Current support is Windows 10/11 x64. TinyTTS does not offer a cloud service,
-telemetry, account system, or cross-platform build.
-
-Release and version policy
---------------------------
-
-Releases use semantic versions and tags such as `v0.2.0`. A release is built
-only from an exact `vX.Y.Z` tag, repeats formatting/lint/tests, produces a
-stable `TinyTTS-windows-x64-vX.Y.Z.zip` filename, and publishes `SHA256SUMS.txt`
-alongside it. Maintainers create releases after validation; contributors do not
-publish tags or assets.
-
-Configuration
--------------
-
-Copy `config.example.toml` to `config/config.toml` next to the executable.
-Available keys:
-
-| key          | default    | meaning                              |
-|--------------|------------|--------------------------------------|
-| `voice`      | `af_heart` | default voice name                   |
-| `speed`      | `1.0`      | playback speed (0.5 – 2.0)           |
-| `num_threads`| `2`        | ONNX Runtime threads (1, 2 or 4)     |
-| `model_dir`  | *(empty)*  | optional absolute model dir override |
-
-Voice and speed can also be changed in the UI and are saved automatically.
-
-Project layout
---------------
-
-    src/
-    ├─ main.rs            entry point (binary)
-    ├─ lib.rs             core library
-    ├─ app.rs             egui window
-    ├─ pipeline.rs        speak pipeline + bounded queue orchestration
-    ├─ tts/               TtsEngine trait + sherpa-onnx Kokoro implementation
-    ├─ audio/             rodio player, bounded queue, WAV writer
-    ├─ text_segmenter.rs  long-text segmentation
-    ├─ clipboard.rs       Windows clipboard read
-    ├─ hotkey.rs          Ctrl+Alt+S global hotkey (reserved on non-Windows)
-    ├─ settings.rs        TOML settings
-    ├─ paths.rs           portable path resolution
-    ├─ error.rs           error types
-    └─ log.rs             tiny file logger (`logs/tinytts.log`)
-
-Contributing
-------------
-
-Development setup, validation commands, compatibility expectations, and asset
-rules are in [CONTRIBUTING.md](CONTRIBUTING.md). The core/UI/model/release
-boundaries are in [docs/architecture.md](docs/architecture.md).
-
-## Roadmap
-
-### Current
-
-- Offline Windows TTS with Kokoro and sherpa-onnx; portable ZIP builds.
-- Explicit model provenance and licensing notes.
-
-### Next
-
-- Publish the first stable `vX.Y.Z` release and add a real GUI screenshot.
-- Voice/model selection and basic pronunciation controls.
-
-### Future
-
-- Smaller model variants and additional voices/languages.
-
-### Not planned
-
-- Cloud TTS, accounts, or telemetry; the tool stays offline.
-
-Security
---------
-
-Do not report exploitable issues in a public issue. Follow
-[SECURITY.md](SECURITY.md) and use GitHub private vulnerability reporting.
-
-Community
----------
-
-Questions, design discussions, and early feedback are welcome on
-[Discord](https://discord.gg/wA2xy6VPK). Discord is an informal community
-channel, not an official support or response-time guarantee. Use GitHub Issues
-for reproducible bugs and scoped feature requests.
-
-Licenses
---------
-
-TinyTTS application source is GPL-3.0-or-later. The model and bundled native libraries have their own
-licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Application source uses [GPL-3.0-or-later](LICENSE). Kokoro, voices, sherpa-onnx, ONNX Runtime and other components retain their own terms; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Application licensing does not relicense the model.
