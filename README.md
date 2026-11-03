@@ -87,7 +87,7 @@ cargo test --all
 cargo build --release
 ```
 
-`cargo test --no-default-features` runs the dependency-free core without GUI, audio or sherpa-onnx linking. Tests use a mock engine and do not load the real Kokoro model; they do not establish voice quality or real-device audio compatibility. Windows is the supported application target; no cross-platform delivery is claimed. Model/voice coverage and pronunciation depend on the supplied model.
+`cargo test --no-default-features` runs the dependency-free core without GUI, audio or sherpa-onnx linking. Those unit tests use a mock engine and do not establish voice quality or real-device audio compatibility. CI separately downloads the explicitly reviewed, hash-pinned model and runs actual native inference, cancellation/recovery and independent WAV checks with self-authored text. The model and audio files are not uploaded as artifacts. See [native security and GUI compatibility](docs/native-security-and-gui.md) for the retained native ABI, eframe 0.37 integration, real GUI checks and their limits. Windows is the supported application target; no cross-platform delivery is claimed. Model/voice coverage and pronunciation depend on the supplied model.
 
 ## Contributing and next work
 

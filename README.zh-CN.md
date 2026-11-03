@@ -87,7 +87,7 @@ cargo test --all
 cargo build --release
 ```
 
-`cargo test --no-default-features` 可跳过 GUI、音频和 sherpa-onnx 链接，运行无依赖核心测试。测试使用模拟引擎，不加载真实 Kokoro，不能据此判断音质或真实设备兼容性。应用支持目标为 Windows；不承诺跨平台交付。发音、语言和音色覆盖取决于所选模型。
+`cargo test --no-default-features` 可跳过 GUI、音频和 sherpa-onnx 链接，运行无依赖核心测试。这些单元测试使用模拟引擎，不能据此判断音质或真实设备兼容性。CI 会另行下载经过明确审查并固定哈希的模型，使用自有文本验证真实原生推理、取消与恢复，以及独立 WAV 检查；模型和音频不会作为工件上传。保留的原生 ABI、eframe 0.37 适配、原生窗口验收及其边界见[原生安全与 GUI 兼容性记录](docs/native-security-and-gui.md)。应用支持目标为 Windows；不承诺跨平台交付。发音、语言和音色覆盖取决于所选模型。
 
 ## 贡献与后续工作
 

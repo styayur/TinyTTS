@@ -40,6 +40,10 @@ jobs:
           python scripts/prepare_native.py --github-env
       - name: Formatting
         run: cargo fmt --all -- --check
+      - name: Dependency security (no advisory exceptions)
+        run: |
+          cargo install cargo-audit --version 0.22.2 --locked
+          cargo audit
       - name: Lint
         run: cargo clippy --all-targets --all-features -- -D warnings
       - name: Tests
