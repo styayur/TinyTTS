@@ -40,10 +40,8 @@ enum LinkMode {
     Shared,
 }
 
-fn main() {
-    if let Err(err) = try_main() {
-        panic!("{err}");
-    }
+fn main() -> Result<(), DynError> {
+    try_main()
 }
 
 fn try_main() -> Result<(), DynError> {

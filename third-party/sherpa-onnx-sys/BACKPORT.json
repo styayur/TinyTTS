@@ -27,7 +27,8 @@
   "changes": [
     "Cargo.toml: explicit local build metadata and ZIP 9.1.3 build dependency",
     "build.rs: use unchanged upstream native version for names and URLs",
-    "README.md: explicitly document local fork and validation boundaries"
+    "README.md: explicitly document local fork and validation boundaries",
+    "build.rs: return typed build errors from main instead of panicking; invalid inputs still fail Cargo"
   ],
   "omissions": [
     "Cargo.lock: library uses root application lock",
