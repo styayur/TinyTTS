@@ -13,7 +13,7 @@ class NativeInputSecurity(unittest.TestCase):
     def test_corrupt_cached_archive_is_rejected_before_extraction(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            (root / 'Cargo.lock').write_text('[[package]]\nname = "sherpa-onnx-sys"\nversion = "1.13.8"\n', encoding='utf-8')
+            (root / 'Cargo.lock').write_text('[[package]]\nname = "sherpa-onnx-sys"\nversion = "1.13.8+tinytts.zip9.1"\n', encoding='utf-8')
             cache = root / '.native'
             cache.mkdir()
             (cache / (native.NAME + '.tar.bz2')).write_bytes(b'untrusted cache entry')

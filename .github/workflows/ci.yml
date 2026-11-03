@@ -36,6 +36,7 @@ jobs:
       - name: Restore and verify native libraries before cached Cargo builds
         run: |
           python -m unittest discover -s tests -p test_native_prepare.py
+          python -m unittest discover -s tests -p test_backport_provenance.py
           python scripts/prepare_native.py --github-env
       - name: Formatting
         run: cargo fmt --all -- --check
@@ -45,3 +46,23 @@ jobs:
         run: cargo test --all
       - name: Release build smoke test
         run: cargo build --release
+      - name: Model trust-boundary regression
+        run: python -m unittest discover -s tests -p test_model_prepare.py
+      - uses: actions/cache@v6
+        with:
+          path: .test-model/*.tar.bz2
+          key: kokoro-v1-54-speakers-60703707
+      - name: Prepare the explicitly reviewed acceptance model
+        run: python scripts/prepare_model.py --github-env
+      - name: Actual native inference, cancellation and WAV acceptance
+        run: |
+          cargo build --locked --example native_model_acceptance
+          python scripts/check_model_acceptance.py
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: native-model-acceptance
+          path: |
+            work/model-acceptance/report.json
+            work/model-acceptance/native-report.toml
+          if-no-files-found: error

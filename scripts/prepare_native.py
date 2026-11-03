@@ -22,7 +22,7 @@ LIBRARIES = ['sherpa-onnx-c-api', 'sherpa-onnx-core', 'kaldi-decoder-core',
 def prepare(archive_dir=None):
     lock = tomllib.loads((ROOT / 'Cargo.lock').read_text(encoding='utf-8'))
     native = next(p for p in lock['package'] if p['name'] == 'sherpa-onnx-sys')
-    if native['version'] != '1.13.8':
+    if native['version'] != '1.13.8+tinytts.zip9.1':
         raise ValueError('Review native archive identity for the new sherpa-onnx version')
     destination = ROOT / '.native'
     destination.mkdir(exist_ok=True)

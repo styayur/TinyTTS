@@ -36,7 +36,7 @@ Download the pinned model, verify its hash **before extraction**, and inspect it
 ```powershell
 New-Item -ItemType Directory -Force models | Out-Null
 curl.exe -L -o kokoro.tar.bz2 https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/kokoro-multi-lang-v1_0.tar.bz2
-$expected = 'C5F7E2D2CAF082BC1D20FB70334A61D99D20B484500AAD32E7CF84C128EA3298'
+$expected = '60703707BC05CCD48D60E1EB723F38B07D6E474795A0B6A588D7220400E0F7A4'
 if ((Get-FileHash ./kokoro.tar.bz2 -Algorithm SHA256).Hash -ne $expected) { throw 'Model checksum mismatch' }
 tar -tf ./kokoro.tar.bz2 | Select-Object -First 15
 tar -xf ./kokoro.tar.bz2 -C ./models
@@ -57,7 +57,7 @@ models/kokoro/
 config/config.toml   # created when settings are saved
 ```
 
-The model archive is 349,906,910 bytes and has separate component terms; see [provenance](docs/model-provenance.md) and [third-party notices](THIRD_PARTY_NOTICES.md). The app never downloads models at runtime. A missing-model error lists the path searched.
+The model archive is 349,886,476 bytes and has separate component terms; see [provenance](docs/model-provenance.md) and [third-party notices](THIRD_PARTY_NOTICES.md). The app never downloads models at runtime. A missing-model error lists the path searched.
 
 ```powershell
 .\TinyTTS.exe
