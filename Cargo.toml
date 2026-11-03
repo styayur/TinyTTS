@@ -11,6 +11,10 @@ readme = "README.md"
 name = "TinyTTS"
 path = "src/main.rs"
 
+[[example]]
+name = "native_model_acceptance"
+required-features = ["native"]
+
 [features]
 default = ["native"]
 # The `native` feature pulls in the GUI and TTS runtime. Disable it to run the

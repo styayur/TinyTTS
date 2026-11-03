@@ -32,7 +32,7 @@ jobs:
       - uses: actions/cache@v6
         with:
           path: .native/*.tar.bz2
-          key: sherpa-static-1.13.8-win-x64-56ffcf3c
+          key: sherpa-static-2.0.0-win-x64-13cbef19
       - name: Restore and verify native libraries before cached Cargo builds
         run: python scripts/prepare_native.py --github-env
       - name: Verify exact source is a signed-off release tag

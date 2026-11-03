@@ -18,6 +18,15 @@ TinyTTS application licence.
 - License: MIT
 - Use: bundled inside the sherpa-onnx prebuilt native library.
 
+### utf8proc 2.12.0
+- Project: https://github.com/JuliaStrings/utf8proc
+- License: MIT with the Unicode data terms retained in the upstream notice.
+- Use: Unicode handling in the sherpa-onnx 2.0.0 native library.
+- Exact original notice: [LICENSE.md](third-party/utf8proc-2.12.0/LICENSE.md).
+  The source archive SHA-256 and original notice digest are recorded in
+  [source.json](third-party/utf8proc-2.12.0/source.json), matching sherpa-onnx's
+  hash-pinned `cmake/utf8proc.cmake`. No notice text is rewritten.
+
 ### Kokoro model (kokoro-multi-lang-v1_0)
 - Source: https://huggingface.co/hexgrad/Kokoro-82M
 - Base model license: Apache-2.0

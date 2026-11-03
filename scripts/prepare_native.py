@@ -10,19 +10,19 @@ import tomllib
 import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
-NAME = 'sherpa-onnx-v1.13.8-win-x64-static-MT-Release-lib'
-SHA256 = '56ffcf3c454c1f14f7bc9887286cc8143e7e542dc632804e1c447d5f8d534eaf'
-SIZE = 123206268
+NAME = 'sherpa-onnx-v2.0.0-win-x64-static-MT-Release-lib'
+SHA256 = '13cbef1926eea3bc01c8eb59bbfa3806f02f904a76664c215c4e20989866704a'
+SIZE = 122697732
 LIBRARIES = ['sherpa-onnx-c-api', 'sherpa-onnx-core', 'kaldi-decoder-core',
              'sherpa-onnx-kaldifst-core', 'sherpa-onnx-fstfar', 'sherpa-onnx-fst',
-             'kaldi-native-fbank-core', 'kissfft-float', 'piper_phonemize',
-             'espeak-ng', 'ucd', 'onnxruntime', 'ssentencepiece_core']
+             'kaldi-native-fbank-core', 'kissfft-float', 'onnxruntime',
+             'ssentencepiece_core', 'utf8proc']
 
 
 def prepare(archive_dir=None):
     lock = tomllib.loads((ROOT / 'Cargo.lock').read_text(encoding='utf-8'))
     native = next(p for p in lock['package'] if p['name'] == 'sherpa-onnx-sys')
-    if native['version'] != '1.13.8':
+    if native['version'] != '2.0.0':
         raise ValueError('Review native archive identity for the new sherpa-onnx version')
     destination = ROOT / '.native'
     destination.mkdir(exist_ok=True)
@@ -32,7 +32,7 @@ def prepare(archive_dir=None):
         if archive_dir:
             shutil.copyfile(Path(archive_dir) / archive.name, partial)
         else:
-            url = f'https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.13.8/{archive.name}'
+            url = f'https://github.com/k2-fsa/sherpa-onnx/releases/download/v2.0.0/{archive.name}'
             with urllib.request.urlopen(url, timeout=60) as response, partial.open('wb') as output:
                 count = 0
                 while chunk := response.read(1024 * 1024):
