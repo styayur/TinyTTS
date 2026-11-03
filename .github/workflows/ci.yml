@@ -26,6 +26,17 @@ jobs:
         with:
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - uses: actions/cache@v6
+        with:
+          path: .native/*.tar.bz2
+          key: sherpa-static-1.13.8-win-x64-56ffcf3c
+      - name: Restore and verify native libraries before cached Cargo builds
+        run: |
+          python -m unittest discover -s tests -p test_native_prepare.py
+          python scripts/prepare_native.py --github-env
       - name: Formatting
         run: cargo fmt --all -- --check
       - name: Lint
