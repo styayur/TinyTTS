@@ -1,5 +1,6 @@
 """Run only the audit-owned native probe, then independently inspect real PCM files."""
 from array import array
+import argparse
 import hashlib
 import json
 import math
@@ -10,7 +11,10 @@ import tomllib
 import wave
 
 ROOT=Path(__file__).resolve().parents[1]
-exe=ROOT/'target/debug/examples'/('native_model_acceptance.exe' if os.name=='nt' else 'native_model_acceptance')
+parser=argparse.ArgumentParser()
+parser.add_argument('--profile',choices=['debug','release'],default='debug')
+profile=parser.parse_args().profile
+exe=ROOT/'target'/profile/'examples'/('native_model_acceptance.exe' if os.name=='nt' else 'native_model_acceptance')
 result=subprocess.run([str(exe)],cwd=ROOT,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=180)
 output=ROOT/'work/model-acceptance'
 (output/'native-run.log').write_text(result.stdout+'\n'+result.stderr,encoding='utf-8')
@@ -28,5 +32,5 @@ for case in report['cases']:
     rms=math.sqrt(sum((sample/32768)**2 for sample in samples)/len(samples))
     assert 0.001<rms<0.9
     case.update(wav_sha256=hashlib.sha256(file.read_bytes()).hexdigest(),seconds=len(samples)/24000,pcm_rms=rms)
-report.update(model_sha256='60703707bc05ccd48d60e1eb723f38b07d6e474795a0b6a588d7220400e0f7a4',paid_or_remote_model_calls=0,synthetic_text_only=True,limits=['No independent linguistic-intelligibility assessment','Physical output-device and GUI acceptance are separate local checks; this process verifies actual native inference and PCM exports.'])
+report.update(build_profile=profile,model_sha256='60703707bc05ccd48d60e1eb723f38b07d6e474795a0b6a588d7220400e0f7a4',paid_or_remote_model_calls=0,synthetic_text_only=True,limits=['No independent linguistic-intelligibility assessment','Physical output-device and GUI acceptance are separate local checks; this process verifies actual native inference and PCM exports.'])
 (output/'report.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
