@@ -13,6 +13,14 @@ TinyTTS application licence.
 - Use: TTS inference (the Rust `sherpa-onnx` crate and its prebuilt native
   library, downloaded automatically by its build script).
 
+### Local sherpa-onnx-sys build-dependency backport
+- Source and original Apache-2.0 text: `third-party/sherpa-onnx-sys/`.
+- Identity: `1.13.8+tinytts.zip9.1`, derived from the official 1.13.8 crate.
+- Changes: ZIP build dependency 9.1.3, unchanged native 1.13.8 names, and
+  checked build-error propagation instead of panicking.
+- Original FFI sources and license bytes are preserved; per-file provenance is
+  recorded in `BACKPORT.json`. This local fork does not upgrade the native ABI.
+
 ### ONNX Runtime
 - Project: https://github.com/microsoft/onnxruntime
 - License: MIT

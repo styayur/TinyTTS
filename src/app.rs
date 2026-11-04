@@ -309,10 +309,10 @@ impl TinyTtsApp {
 }
 
 impl eframe::App for TinyTtsApp {
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        self.poll_background(ctx);
+    fn ui(&mut self, root_ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        self.poll_background(root_ui.ctx());
 
-        egui::CentralPanel::default().show(ctx, |ui| {
+        egui::CentralPanel::default().show(root_ui, |ui| {
             ui.heading("TinyTTS");
             ui.separator();
 

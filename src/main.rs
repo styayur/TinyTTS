@@ -21,6 +21,7 @@ fn run() -> Result<()> {
     tinytts::log::init(&paths.log_file());
 
     let native_options = eframe::NativeOptions {
+        renderer: eframe::Renderer::Glow,
         viewport: egui::ViewportBuilder::default()
             .with_inner_size([720.0, 500.0])
             .with_min_inner_size([480.0, 340.0])

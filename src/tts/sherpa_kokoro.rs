@@ -69,6 +69,7 @@ const KOKORO_VOICES: &[&str] = &[
     "zm_yunxi",
     "zm_yunxia",
     "zm_yunyang",
+    "em_santa",
 ];
 
 /// Kokoro TTS via the official sherpa-onnx Rust API.
@@ -134,6 +135,9 @@ impl TtsEngine for SherpaKokoroEngine {
         speed: f32,
         cancel: &Arc<AtomicBool>,
     ) -> Result<AudioChunk> {
+        if cancel.load(Ordering::Relaxed) {
+            return Err(TinyTtsError::Cancelled);
+        }
         let generation = GenerationConfig {
             sid: voice_id,
             speed,
@@ -149,6 +153,11 @@ impl TtsEngine for SherpaKokoroEngine {
             }),
         );
 
+        // Native cancellation may return a partial buffer. Never expose it as
+        // a successfully completed chunk after Stop has cancelled the request.
+        if cancel.load(Ordering::Relaxed) {
+            return Err(TinyTtsError::Cancelled);
+        }
         match audio {
             Some(a) => Ok(AudioChunk {
                 samples: a.samples().to_vec(),
@@ -195,4 +204,29 @@ fn load_voices(voices_txt: &Path, num_speakers: i32) -> Vec<Voice> {
             name: (*name).to_string(),
         })
         .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn original_voice_ids_remain_stable_for_53_speaker_models() {
+        let voices = load_voices(Path::new("missing-native-voice-fixture.txt"), 53);
+        assert_eq!(voices.len(), 53);
+        assert_eq!(voices[3].name, "af_heart");
+        assert_eq!(voices[45].name, "zf_xiaobei");
+        assert_eq!(voices[52].name, "zm_yunyang");
+        assert_eq!(voices[52].id, 52);
+    }
+
+    #[test]
+    fn reviewed_54th_speaker_is_exposed_without_shifting_existing_ids() {
+        let voices = load_voices(Path::new("missing-native-voice-fixture.txt"), 54);
+        assert_eq!(voices.len(), 54);
+        assert_eq!(voices[3].name, "af_heart");
+        assert_eq!(voices[45].id, 45);
+        assert_eq!(voices[53].name, "em_santa");
+        assert_eq!(voices[53].id, 53);
+    }
 }

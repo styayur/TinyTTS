@@ -36,7 +36,7 @@ Set-Location ./target/release
 ```powershell
 New-Item -ItemType Directory -Force models | Out-Null
 curl.exe -L -o kokoro.tar.bz2 https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/kokoro-multi-lang-v1_0.tar.bz2
-$expected = 'C5F7E2D2CAF082BC1D20FB70334A61D99D20B484500AAD32E7CF84C128EA3298'
+$expected = '60703707BC05CCD48D60E1EB723F38B07D6E474795A0B6A588D7220400E0F7A4'
 if ((Get-FileHash ./kokoro.tar.bz2 -Algorithm SHA256).Hash -ne $expected) { throw 'Model checksum mismatch' }
 tar -tf ./kokoro.tar.bz2 | Select-Object -First 15
 tar -xf ./kokoro.tar.bz2 -C ./models
@@ -57,7 +57,7 @@ models/kokoro/
 config/config.toml   # created when settings are saved
 ```
 
-归档大小为 349,906,910 字节，各组成部分有独立条款，见[模型来源](docs/model-provenance.md)与[第三方声明](THIRD_PARTY_NOTICES.md)。应用不会自动下载模型；缺失错误会显示搜索路径。
+归档大小为 349,886,476 字节，各组成部分有独立条款，见[模型来源](docs/model-provenance.md)与[第三方声明](THIRD_PARTY_NOTICES.md)。应用不会自动下载模型；缺失错误会显示搜索路径。
 
 ```powershell
 .\TinyTTS.exe
@@ -87,7 +87,7 @@ cargo test --all
 cargo build --release
 ```
 
-`cargo test --no-default-features` 可跳过 GUI、音频和 sherpa-onnx 链接，运行无依赖核心测试。测试使用模拟引擎，不加载真实 Kokoro，不能据此判断音质或真实设备兼容性。应用支持目标为 Windows；不承诺跨平台交付。发音、语言和音色覆盖取决于所选模型。
+`cargo test --no-default-features` 可跳过 GUI、音频和 sherpa-onnx 链接，运行无依赖核心测试。这些单元测试使用模拟引擎，不能据此判断音质或真实设备兼容性。CI 会另行下载经过明确审查并固定哈希的模型，使用自有文本验证真实原生推理、取消与恢复，以及独立 WAV 检查；模型和音频不会作为工件上传。保留的原生 ABI、eframe 0.37 适配、原生窗口验收及其边界见[原生安全与 GUI 兼容性记录](docs/native-security-and-gui.md)。应用支持目标为 Windows；不承诺跨平台交付。发音、语言和音色覆盖取决于所选模型。
 
 ## 贡献与后续工作
 

@@ -36,7 +36,7 @@ Download the pinned model, verify its hash **before extraction**, and inspect it
 ```powershell
 New-Item -ItemType Directory -Force models | Out-Null
 curl.exe -L -o kokoro.tar.bz2 https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/kokoro-multi-lang-v1_0.tar.bz2
-$expected = 'C5F7E2D2CAF082BC1D20FB70334A61D99D20B484500AAD32E7CF84C128EA3298'
+$expected = '60703707BC05CCD48D60E1EB723F38B07D6E474795A0B6A588D7220400E0F7A4'
 if ((Get-FileHash ./kokoro.tar.bz2 -Algorithm SHA256).Hash -ne $expected) { throw 'Model checksum mismatch' }
 tar -tf ./kokoro.tar.bz2 | Select-Object -First 15
 tar -xf ./kokoro.tar.bz2 -C ./models
@@ -57,7 +57,7 @@ models/kokoro/
 config/config.toml   # created when settings are saved
 ```
 
-The model archive is 349,906,910 bytes and has separate component terms; see [provenance](docs/model-provenance.md) and [third-party notices](THIRD_PARTY_NOTICES.md). The app never downloads models at runtime. A missing-model error lists the path searched.
+The model archive is 349,886,476 bytes and has separate component terms; see [provenance](docs/model-provenance.md) and [third-party notices](THIRD_PARTY_NOTICES.md). The app never downloads models at runtime. A missing-model error lists the path searched.
 
 ```powershell
 .\TinyTTS.exe
@@ -87,7 +87,7 @@ cargo test --all
 cargo build --release
 ```
 
-`cargo test --no-default-features` runs the dependency-free core without GUI, audio or sherpa-onnx linking. Tests use a mock engine and do not load the real Kokoro model; they do not establish voice quality or real-device audio compatibility. Windows is the supported application target; no cross-platform delivery is claimed. Model/voice coverage and pronunciation depend on the supplied model.
+`cargo test --no-default-features` runs the dependency-free core without GUI, audio or sherpa-onnx linking. Those unit tests use a mock engine and do not establish voice quality or real-device audio compatibility. CI separately downloads the explicitly reviewed, hash-pinned model and runs actual native inference, cancellation/recovery and independent WAV checks with self-authored text. The model and audio files are not uploaded as artifacts. See [native security and GUI compatibility](docs/native-security-and-gui.md) for the retained native ABI, eframe 0.37 integration, real GUI checks and their limits. Windows is the supported application target; no cross-platform delivery is claimed. Model/voice coverage and pronunciation depend on the supplied model.
 
 ## Contributing and next work
 
