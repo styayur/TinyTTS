@@ -1,0 +1,26 @@
+{
+  "captured_at": "2026-11-05T02:05:00+08:00",
+  "repository": "styayur/TinyTTS",
+  "issue_pr": 12,
+  "change": "rodio 0.19.0 -> 0.23.0, migrate OutputStream/Sink to DeviceSinkBuilder/MixerDeviceSink/Player",
+  "tests": {
+    "cargo_fmt": "passed",
+    "cargo_clippy_all_targets_all_features_deny_warnings": "passed after final source review",
+    "cargo_test_all": "26 passed, 0 failed",
+    "actual_default_audio_device": {
+      "test": "audio::player::tests::default_output_plays_pause_resume_and_clears",
+      "command": "cargo test --all-features --lib default_output_plays_pause_resume_and_clears -- --ignored --nocapture",
+      "result": "passed",
+      "behavior": "opened the default OS output, played a synthetic 440 Hz buffer, paused/resumed, drained the queue, and stopped cleanly"
+    },
+    "cargo_audit": {
+      "vulnerabilities": 0,
+      "informational_warnings_preserved": true
+    }
+  },
+  "not_claimed": [
+    "No formal release or signing identity was changed.",
+    "No production user audio or data was used.",
+    "No device-selector UI was added; the app continues to use the OS default output device."
+  ]
+}
