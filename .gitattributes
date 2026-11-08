@@ -6,3 +6,5 @@
 *.yaml text eol=lf
 # Keep checksum-verified upstream source and licence bytes identical on Windows.
 third-party/sherpa-onnx-sys/** -text
+
+.github/workflows/*.lock.yml linguist-generated=true
