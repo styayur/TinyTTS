@@ -36,7 +36,7 @@ sherpa-onnx = { version = "1.13.8", optional = true }
 # Keep the existing OpenGL renderer; 0.37 changes its default to WGPU.
 eframe = { version = "0.37", optional = true, default-features = false, features = ["accesskit", "clipboard", "default_fonts", "glow", "links", "system_fonts", "wayland", "web_screen_reader", "x11"] }
 rodio = { version = "0.23", optional = true }
-rfd = { version = "0.17", optional = true }
+rfd = { version = "0.18", optional = true }
 
 [target.'cfg(windows)'.dependencies]
 windows-sys = { version = "0.61", optional = true, features = [
