@@ -137,15 +137,10 @@ fn is_abbreviation_or_initials(chars: &[char], i: usize) -> bool {
     // Initialisms such as "U.S.A." or "J.R.R." are single uppercase letters
     // separated by dots.
     let parts: Vec<&str> = word.split('.').filter(|p| !p.is_empty()).collect();
-    if parts.len() >= 2
-        && parts
-            .iter()
-            .all(|p| p.len() == 1 && p.chars().next().is_some_and(|c| c.is_ascii_uppercase()))
-    {
-        return true;
-    }
-
-    false
+    parts.len() >= 2
+        && parts.iter().all(|part| {
+            part.len() == 1 && part.chars().next().is_some_and(|c| c.is_ascii_uppercase())
+        })
 }
 
 fn flush(buf: &mut Vec<char>, chunks: &mut Vec<String>) {
