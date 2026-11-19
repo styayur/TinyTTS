@@ -10,7 +10,7 @@ pub fn read_text() -> Result<Option<String>> {
     use windows_sys::Win32::System::DataExchange::{
         CloseClipboard, GetClipboardData, OpenClipboard,
     };
-    use windows_sys::Win32::System::Memory::{GlobalLock, GlobalUnlock};
+    use windows_sys::Win32::System::Memory::{GlobalLock, GlobalSize, GlobalUnlock};
 
     const CF_UNICODETEXT: u32 = 13;
 
@@ -35,11 +35,23 @@ pub fn read_text() -> Result<Option<String>> {
             ));
         }
 
-        let wide = locked as *const u16;
-        let mut len = 0usize;
-        while *wide.add(len) != 0 {
-            len += 1;
+        let units = GlobalSize(handle) / std::mem::size_of::<u16>();
+        if units == 0 || units > 1_048_576 {
+            GlobalUnlock(handle);
+            CloseClipboard();
+            return Err(TinyTtsError::ClipboardUnavailable(
+                "Clipboard text exceeds bounds".into(),
+            ));
         }
+        let buffer = std::slice::from_raw_parts(locked as *const u16, units);
+        let Some(len) = buffer.iter().position(|value| *value == 0) else {
+            GlobalUnlock(handle);
+            CloseClipboard();
+            return Err(TinyTtsError::ClipboardUnavailable(
+                "Clipboard text is not terminated".into(),
+            ));
+        };
+        let wide = locked as *const u16;
         let text = if len == 0 {
             String::new()
         } else {

@@ -40,13 +40,16 @@ mod imp {
         pub fn register() -> Option<Self> {
             let (tx, rx) = channel();
             let (stop, stop_rx) = channel();
+            let (ready_tx, ready_rx) = channel();
 
             let spawned = thread::Builder::new()
                 .name("tinytts-hotkey".to_string())
                 .spawn(move || unsafe {
                     if RegisterHotKey(0 as HWND, HOTKEY_ID, MOD_CONTROL | MOD_ALT, VK_S) == 0 {
+                        let _ = ready_tx.send(false);
                         return;
                     }
+                    let _ = ready_tx.send(true);
 
                     let mut msg: MSG = std::mem::zeroed();
                     loop {
@@ -70,10 +73,14 @@ mod imp {
                 })
                 .ok()?;
 
-            if spawned.is_finished() {
-                // Registration failed and the thread already exited.
+            if !ready_rx
+                .recv_timeout(Duration::from_secs(1))
+                .unwrap_or(false)
+            {
+                let _ = stop.send(());
                 return None;
             }
+            drop(spawned);
 
             Some(Self { rx, stop })
         }
