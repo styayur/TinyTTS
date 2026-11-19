@@ -26,7 +26,7 @@ default = ["native"]
 # native library:
 #
 #     cargo test --no-default-features
-native = ["dep:sherpa-onnx", "dep:eframe", "dep:rodio", "dep:rfd", "dep:windows-sys"]
+native = ["dep:sherpa-onnx", "dep:eframe", "dep:rodio", "dep:rfd", "dep:windows-sys", "dep:clipboard-win"]
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
@@ -39,6 +39,7 @@ rodio = { version = "0.23", optional = true }
 rfd = { version = "0.17", optional = true }
 
 [target.'cfg(windows)'.dependencies]
+clipboard-win = { version = "=5.4.3", optional = true }
 windows-sys = { version = "0.61", optional = true, features = [
     "Win32_Foundation",
     "Win32_System_DataExchange",
