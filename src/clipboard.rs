@@ -14,6 +14,10 @@ pub fn read_text() -> Result<Option<String>> {
 
     const CF_UNICODETEXT: u32 = 13;
 
+    // SAFETY: clipboard ownership remains open while its non-null HGLOBAL is locked.
+    // GlobalSize bounds the aligned UTF-16 allocation; a terminator must occur inside
+    // that allocation before text is copied. Every exit after locking unlocks the
+    // handle and closes the clipboard; no borrowed clipboard storage escapes.
     unsafe {
         if OpenClipboard(ptr::null_mut()) == 0 {
             return Err(TinyTtsError::ClipboardUnavailable(

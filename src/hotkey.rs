@@ -44,6 +44,10 @@ mod imp {
 
             let spawned = thread::Builder::new()
                 .name("tinytts-hotkey".to_string())
+                // SAFETY: null HWND binds registration to this owner thread; the same
+                // thread unregisters HOTKEY_ID before exit. MSG is an initialized,
+                // writable C struct; it is read/dispatched only after PeekMessageW
+                // fills it. No message pointer or borrowed storage escapes this loop.
                 .spawn(move || unsafe {
                     if RegisterHotKey(0 as HWND, HOTKEY_ID, MOD_CONTROL | MOD_ALT, VK_S) == 0 {
                         let _ = ready_tx.send(false);
