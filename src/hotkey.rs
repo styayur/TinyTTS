@@ -40,20 +40,13 @@ mod imp {
         pub fn register() -> Option<Self> {
             let (tx, rx) = channel();
             let (stop, stop_rx) = channel();
-            let (ready_tx, ready_rx) = channel();
 
             let spawned = thread::Builder::new()
                 .name("tinytts-hotkey".to_string())
-                // SAFETY: null HWND binds registration to this owner thread; the same
-                // thread unregisters HOTKEY_ID before exit. MSG is an initialized,
-                // writable C struct; it is read/dispatched only after PeekMessageW
-                // fills it. No message pointer or borrowed storage escapes this loop.
                 .spawn(move || unsafe {
                     if RegisterHotKey(0 as HWND, HOTKEY_ID, MOD_CONTROL | MOD_ALT, VK_S) == 0 {
-                        let _ = ready_tx.send(false);
                         return;
                     }
-                    let _ = ready_tx.send(true);
 
                     let mut msg: MSG = std::mem::zeroed();
                     loop {
@@ -77,14 +70,10 @@ mod imp {
                 })
                 .ok()?;
 
-            if !ready_rx
-                .recv_timeout(Duration::from_secs(1))
-                .unwrap_or(false)
-            {
-                let _ = stop.send(());
+            if spawned.is_finished() {
+                // Registration failed and the thread already exited.
                 return None;
             }
-            drop(spawned);
 
             Some(Self { rx, stop })
         }

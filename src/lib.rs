@@ -16,7 +16,7 @@ pub mod tts;
 
 #[cfg(feature = "native")]
 pub mod app;
-#[cfg(feature = "native")]
+#[cfg(any(feature = "native", test))]
 pub mod clipboard;
 #[cfg(feature = "native")]
 pub mod hotkey;
