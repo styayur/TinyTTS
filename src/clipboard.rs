@@ -13,7 +13,9 @@ fn decode_text(bytes: &[u8]) -> Result<Option<String>> {
         ));
     }
     let units: Vec<u16> = bytes
-        .chunks_exact(2)
+        .as_chunks::<2>()
+        .0
+        .iter()
         .map(|pair| u16::from_le_bytes([pair[0], pair[1]]))
         .collect();
     let Some(end) = units.iter().position(|unit| *unit == 0) else {
