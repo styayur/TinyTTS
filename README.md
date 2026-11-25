@@ -4,6 +4,8 @@ Offline text-to-speech for Windows using Rust, sherpa-onnx and Kokoro.
 
 [简体中文](README.zh-CN.md) · [Architecture](docs/architecture.md) · [Issues](https://github.com/styayur/TinyTTS/issues)
 
+**Maintenance moved to Siny.** Use [Siny 0.1.0 Alpha 2](https://github.com/styayur/siny/releases/tag/v0.1.0-alpha.2) for offline reading and dictation on Windows. In Siny, open **Settings & models**, choose **Import TinyTTS config**, and review the settings before saving. TinyTTS is no longer maintained. Its source and build instructions remain available for reference.
+
 **Source preview.** No GitHub release is published as of 22-10-2026. Build from source; a release workflow and packaging instructions are not an available download.
 
 ![TinyTTS desktop window with its text input, voice and playback controls](docs/assets/tinytts.png)
