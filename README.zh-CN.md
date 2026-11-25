@@ -4,6 +4,8 @@
 
 [English](README.md) · [架构](docs/architecture.md) · [问题反馈](https://github.com/styayur/TinyTTS/issues)
 
+**后续维护已迁至 Siny。** Windows 离线朗读和听写请使用 [Siny 0.1.0 Alpha 2](https://github.com/styayur/siny/releases/tag/v0.1.0-alpha.2)。在 Siny 的 **Settings & models** 中选择 **Import TinyTTS config**，核对预览后再保存。TinyTTS 已停止维护，历史源码和构建说明仍可访问。
+
 **源码预览版。** 截至 22-10-2026，没有已发布的 GitHub Release。请从源码构建；存在发布工作流和打包步骤不代表已有下载包。
 
 ![TinyTTS 桌面窗口，包含文字输入、音色与播放控制](docs/assets/tinytts.png)
